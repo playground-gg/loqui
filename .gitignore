@@ -1,0 +1,10 @@
+.DS_Store
+.env.local
+.claude/settings.local.json
+build/
+DerivedData/
+Loqui.xcodeproj/
+.swiftpm/
+Packages/*/.build/
+*.mlmodelc/
+*.wav

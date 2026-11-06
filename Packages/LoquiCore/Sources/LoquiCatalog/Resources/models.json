@@ -1,0 +1,469 @@
+{
+  "languages": [
+    {
+      "code": "it",
+      "name": "Italiano"
+    },
+    {
+      "code": "en",
+      "name": "English"
+    },
+    {
+      "code": "es",
+      "name": "Español"
+    },
+    {
+      "code": "fr",
+      "name": "Français"
+    },
+    {
+      "code": "de",
+      "name": "Deutsch"
+    },
+    {
+      "code": "pt",
+      "name": "Português"
+    },
+    {
+      "code": "nl",
+      "name": "Nederlands"
+    },
+    {
+      "code": "pl",
+      "name": "Polski"
+    },
+    {
+      "code": "ro",
+      "name": "Română"
+    },
+    {
+      "code": "sv",
+      "name": "Svenska"
+    },
+    {
+      "code": "da",
+      "name": "Dansk"
+    },
+    {
+      "code": "fi",
+      "name": "Suomi"
+    },
+    {
+      "code": "cs",
+      "name": "Čeština"
+    },
+    {
+      "code": "sk",
+      "name": "Slovenčina"
+    },
+    {
+      "code": "sl",
+      "name": "Slovenščina"
+    },
+    {
+      "code": "hr",
+      "name": "Hrvatski"
+    },
+    {
+      "code": "hu",
+      "name": "Magyar"
+    },
+    {
+      "code": "bg",
+      "name": "Български"
+    },
+    {
+      "code": "el",
+      "name": "Ελληνικά"
+    },
+    {
+      "code": "et",
+      "name": "Eesti"
+    },
+    {
+      "code": "lv",
+      "name": "Latviešu"
+    },
+    {
+      "code": "lt",
+      "name": "Lietuvių"
+    },
+    {
+      "code": "mt",
+      "name": "Malti"
+    },
+    {
+      "code": "ru",
+      "name": "Русский"
+    },
+    {
+      "code": "uk",
+      "name": "Українська"
+    },
+    {
+      "code": "tr",
+      "name": "Türkçe"
+    },
+    {
+      "code": "ar",
+      "name": "العربية"
+    },
+    {
+      "code": "hi",
+      "name": "हिन्दी"
+    },
+    {
+      "code": "zh",
+      "name": "中文"
+    },
+    {
+      "code": "ja",
+      "name": "日本語"
+    },
+    {
+      "code": "ko",
+      "name": "한국어"
+    }
+  ],
+  "werSource": {
+    "name": "Handy models",
+    "dataset": "FLEURS test, Q8_0 con transcribe.cpp: runtime diverso da Core ML, parlato letto",
+    "url": "https://models.handy.computer/languages/it"
+  },
+  "referenceDevice": "iPhone 17 Pro, iOS 27.0",
+  "models": [
+    {
+      "id": "parakeet-ultra",
+      "name": "Parakeet Ultra",
+      "engine": "fluidaudio",
+      "engineModel": "ultra",
+      "downloadMB": 632,
+      "referenceRAMMB": 620,
+      "referenceRTFx": 112,
+      "published": "127× su Mac, LibriSpeech test-clean (FluidAudio)",
+      "license": "CC-BY-4.0",
+      "wer": {
+        "it": 2.34,
+        "en": 4.26,
+        "es": 3.06,
+        "fr": 4.66,
+        "de": 4.58,
+        "pt": 4.16,
+        "nl": 6.7,
+        "pl": 6.16,
+        "ro": 10.12,
+        "sv": 12.83,
+        "da": 15.98,
+        "fi": 11.14,
+        "cs": 11.04,
+        "sk": 7.83,
+        "sl": 18.98,
+        "hr": 11.3,
+        "hu": 13.09,
+        "bg": 11.04,
+        "el": 32.25,
+        "et": 14.44,
+        "lv": 18.04,
+        "lt": 17.06,
+        "mt": 17.01,
+        "ru": 5.63,
+        "uk": 5.71
+      },
+      "vocabulary": {
+        "support": "unverified",
+        "how": "Boosting CTC di FluidAudio, solo in batch: lingue da verificare in fase 2."
+      },
+      "notes": "Il più accurato tra i veloci. Da app chiusa impiega circa 10 s a caricarsi. Niente anteprima nativa: trascrive a fine dettatura. Riconosce da solo la lingua tra le 25 supportate, senza bisogno di sceglierla. Ha retto italiano e inglese mescolati nella stessa dettatura (voci sintetiche).",
+      "languages": [
+        "bg",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "et",
+        "fi",
+        "fr",
+        "hr",
+        "hu",
+        "it",
+        "lt",
+        "lv",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "sv",
+        "uk"
+      ]
+    },
+    {
+      "id": "parakeet-tdt-v3",
+      "name": "Parakeet TDT v3",
+      "engine": "fluidaudio",
+      "engineModel": "v3",
+      "downloadMB": 480,
+      "referenceRAMMB": 480,
+      "referenceRTFx": 109,
+      "published": "129× su Mac, LibriSpeech test-clean (FluidAudio)",
+      "license": "CC-BY-4.0",
+      "wer": {
+        "it": 3.02,
+        "en": 4.83,
+        "es": 3.65,
+        "fr": 5.3,
+        "de": 5.24,
+        "pt": 4.96,
+        "nl": 7.66,
+        "pl": 7.37,
+        "ro": 12.62,
+        "sv": 15.25,
+        "da": 18.64,
+        "fi": 13.3,
+        "cs": 12.31,
+        "sk": 10.19,
+        "sl": 24.3,
+        "hr": 12.59,
+        "hu": 16.06,
+        "bg": 12.81,
+        "el": 35.33,
+        "et": 17.96,
+        "lv": 23.77,
+        "lt": 22.2,
+        "mt": 20.63,
+        "ru": 6.54,
+        "uk": 6.84
+      },
+      "vocabulary": {
+        "support": "unverified",
+        "how": "Boosting CTC di FluidAudio, solo in batch: lingue da verificare in fase 2."
+      },
+      "notes": "Stessa velocità di Ultra con meno RAM, ma meno accurato. Caricamento da app chiusa più lento (15,6 s in una misura). Riconosce da solo la lingua tra le 25 supportate, senza bisogno di sceglierla. Lingue mescolate non provate su questo modello.",
+      "languages": [
+        "bg",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "et",
+        "fi",
+        "fr",
+        "hr",
+        "hu",
+        "it",
+        "lt",
+        "lv",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "sv",
+        "uk"
+      ]
+    },
+    {
+      "id": "whisper-large-v3-turbo",
+      "name": "Whisper large-v3-turbo",
+      "engine": "whisperkit",
+      "engineModel": "openai_whisper-large-v3-v20240930_626MB",
+      "downloadMB": 627,
+      "referenceRAMMB": 667,
+      "referenceRTFx": 7.5,
+      "published": null,
+      "license": "MIT",
+      "wer": {
+        "it": 2.77,
+        "en": 4.38,
+        "es": 3.12,
+        "fr": 5.51,
+        "de": 4.54,
+        "pt": 4.17,
+        "nl": 5.98,
+        "pl": 5.81,
+        "ro": 10.9,
+        "sv": 8.72,
+        "da": 13.6,
+        "fi": 8.29,
+        "cs": 11.81,
+        "sk": 10.21,
+        "sl": 20.56,
+        "hr": 12.54,
+        "hu": 15.07,
+        "bg": 13.58,
+        "el": 13.26,
+        "et": 18.44,
+        "lv": 19.53,
+        "lt": 25.11,
+        "mt": 70.92,
+        "ru": 5.93,
+        "uk": 7.31,
+        "tr": 6.97,
+        "ar": 15.48,
+        "hi": 18.85,
+        "zh": 8.5,
+        "ja": 4.82,
+        "ko": 5.24
+      },
+      "vocabulary": {
+        "support": "yes",
+        "how": "promptTokens di WhisperKit."
+      },
+      "notes": "Molto accurato ma lento su iPhone: circa 0,8 s anche su una frase brevissima, oltre 1 s da circa 6 s di audio. Picco di RAM vicino a 1 GB. Da app chiusa si carica in circa 1 s. Con lingue mescolate può perdere intere frasi senza avvisare.",
+      "languages": [
+        "ar",
+        "bg",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "et",
+        "fi",
+        "fr",
+        "hi",
+        "hr",
+        "hu",
+        "it",
+        "ja",
+        "ko",
+        "lt",
+        "lv",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "sv",
+        "tr",
+        "uk",
+        "zh"
+      ]
+    },
+    {
+      "id": "whisper-small",
+      "name": "Whisper small",
+      "engine": "whisperkit",
+      "engineModel": "openai_whisper-small_216MB",
+      "downloadMB": 217,
+      "referenceRAMMB": 286,
+      "referenceRTFx": 12.3,
+      "published": null,
+      "license": "MIT",
+      "wer": {
+        "it": 7.97,
+        "en": 6.51,
+        "es": 5.92,
+        "fr": 13.3,
+        "de": 9.86,
+        "pt": 7.65,
+        "nl": 18.48,
+        "pl": 16.82,
+        "ro": 33.88,
+        "sv": 23.1,
+        "da": 35.52,
+        "fi": 26.48,
+        "cs": 40.57,
+        "sk": 36.05,
+        "sl": 52.7,
+        "hr": 36.05,
+        "hu": 42.39,
+        "bg": 40.39,
+        "el": 33.98,
+        "et": 54.79,
+        "lv": 57.42,
+        "lt": 70.21,
+        "mt": 97.32,
+        "ru": 11.9,
+        "uk": 20.42,
+        "tr": 15.95,
+        "ar": 32.15,
+        "hi": 42.05,
+        "zh": 23.06,
+        "ja": 12.81,
+        "ko": 7.7
+      },
+      "vocabulary": {
+        "support": "yes",
+        "how": "promptTokens di WhisperKit."
+      },
+      "notes": "Il più leggero tra quelli scaricabili, a costo di molti più errori. Circa 1 s su 14 s di audio; da app chiusa si carica in meno di 1 s. Con lingue mescolate può perdere frasi o tradurle.",
+      "languages": [
+        "ar",
+        "bg",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "et",
+        "fi",
+        "fr",
+        "hi",
+        "hr",
+        "hu",
+        "it",
+        "ja",
+        "ko",
+        "lt",
+        "lv",
+        "mt",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "sv",
+        "tr",
+        "uk",
+        "zh"
+      ]
+    },
+    {
+      "id": "apple-speechanalyzer",
+      "name": "Apple SpeechAnalyzer",
+      "engine": "apple",
+      "engineModel": "transcription",
+      "downloadMB": 0,
+      "referenceRAMMB": 24,
+      "referenceRTFx": 74,
+      "published": null,
+      "license": "Sistema iOS",
+      "wer": {},
+      "vocabulary": {
+        "support": "yes",
+        "how": "contextualStrings di Apple."
+      },
+      "notes": "Il modello lo scarica e lo gestisce iOS. La RAM indicata è solo quella dentro Loqui: il modello gira in un processo di sistema. Accuratezza non valutata da Handy. Scarica un modello per ogni lingua. Elenco lingue letto su macOS: su iPhone può variare. Tiene al massimo 5 lingue alla volta. Con lingue mescolate può perdere parole.",
+      "languages": [
+        "de",
+        "en",
+        "es",
+        "fr",
+        "hi",
+        "it",
+        "ja",
+        "ko",
+        "pt",
+        "zh"
+      ]
+    }
+  ]
+}

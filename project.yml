@@ -1,0 +1,99 @@
+name: Loqui
+options:
+  bundleIdPrefix: com.giovannigiofre
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: true
+packages:
+  LoquiCore:
+    path: Packages/LoquiCore
+targets:
+  Loqui:
+    type: application
+    platform: iOS
+    sources:
+      - path: Apps/Loqui
+        excludes:
+          - Resources/BenchmarkClips
+          - Resources/LanguageClips
+      - path: Apps/Loqui/Resources/BenchmarkClips
+        type: folder
+        optional: true
+      - path: Apps/Loqui/Resources/LanguageClips
+        type: folder
+        optional: true
+    dependencies:
+      - package: LoquiCore
+        product: LoquiEngines
+      - package: LoquiCore
+        product: LoquiCatalog
+      - package: LoquiCore
+        product: LoquiShared
+      - target: LoquiKeyboard
+    entitlements:
+      path: Apps/Loqui/Loqui.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.giovannigiofre.loqui
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.giovannigiofre.loqui
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    info:
+      path: Apps/Loqui/Info.plist
+      properties:
+        CFBundleDisplayName: Loqui
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIBackgroundModes:
+          - audio
+        CFBundleURLTypes:
+          - CFBundleURLName: com.giovannigiofre.loqui
+            CFBundleURLSchemes:
+              - loqui
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.giovannigiofre.loqui.download.*
+        NSMicrophoneUsageDescription: Loqui usa il microfono per trascrivere la tua voce direttamente sul telefono. L'audio non lascia mai il dispositivo.
+        NSSpeechRecognitionUsageDescription: Loqui usa il riconoscimento vocale di Apple sul dispositivo se scegli quel motore.
+  LoquiKeyboard:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Apps/LoquiKeyboard
+    dependencies:
+      - package: LoquiCore
+        product: LoquiShared
+    entitlements:
+      path: Apps/LoquiKeyboard/LoquiKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.giovannigiofre.loqui
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.giovannigiofre.loqui.keyboard
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    info:
+      path: Apps/LoquiKeyboard/Info.plist
+      properties:
+        CFBundleDisplayName: Loqui
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: KeyboardViewController
+          NSExtensionAttributes:
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: mul
+            RequestsOpenAccess: true

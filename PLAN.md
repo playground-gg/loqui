@@ -1,11 +1,24 @@
 # Loqui: piano
 
-Stato: **M2 funzionante, M3 da iniziare.** L'utente ha confermato sul telefono dettatura, cambio di lingua, download
-in background, eliminazione e dettatura dalla tastiera. Tastiera a 11,6 MB all'apertura (obiettivo sotto 40 MB, picco
-in uso non misurato), script di privacy verde e provato anche su un binario con codice di rete. Restano da provare:
-dettatura in modalità aereo, dettatura oltre il minuto, tocco a vuoto. Misure:
-[modelli](docs/benchmarks/2026-11-06-iphone17pro.md), [lingue](docs/benchmarks/2026-11-06-multilingua.md).
+Stato: **M3 ridotta e funzionante, sviluppo in pausa per scelta dell'utente.** Confermati sul telefono: dettatura, cambio
+di lingua, download in background, eliminazione, dettatura dalla tastiera, partenza automatica, ritorno istantaneo e
+annulla. Tastiera a 11,6 MB all'apertura (obiettivo sotto 40 MB, picco in uso non misurato), script di privacy verde e
+provato anche su un binario con codice di rete. Misure: [modelli](docs/benchmarks/2026-11-06-iphone17pro.md),
+[lingue](docs/benchmarks/2026-11-06-multilingua.md), [background](docs/benchmarks/2026-11-06-background.md).
 Ultima revisione: 2026-11-06.
+
+**Sospesi su decisione dell'utente:** Action Button, Centro di Controllo e Live Activity. Non si costruiscono per ora.
+
+**Da provare:** batteria con il microfono pronto (`--auto-battery-check`, pronta, non eseguita; il default di 3 minuti
+resta provvisorio), dettatura in modalità aereo, dettatura oltre il minuto, tocco a vuoto.
+
+**Da rivedere:** all'utente non piacciono le notifiche automatiche del download in background.
+
+**Decisione: tastiera (opzione A).** Mini-tastiera: scegliendola dal globo la dettatura parte da sola, e all'inserimento
+si torna subito a quella abituale. Il microfono resta pronto per un tempo scelto dall'utente: default provvisorio 3
+minuti, da rivedere dopo la prova sulla batteria. Senza pausa di ritorno non c'è "annulla pulizia" sulla tastiera: da
+ripensare in M4. Annulla scarta la dettatura in corso; stop automatico dopo 10 minuti. Limite: con più di due tastiere
+attive il ritorno va alla successiva, non per forza a quella di prima.
 
 **Da rivedere:** all'utente non piacciono le notifiche automatiche del download in background. Si riprende più avanti.
 
@@ -192,7 +205,8 @@ manuale.
   Button e Centro di Controllo, push-to-talk e toggle.
 - Percorso per la release senza lancio dalla tastiera: istruzioni e avvio da intent.
 - Spike sul caricamento: da app chiusa Parakeet richiede oltre 10 s, quindi va misurato quanto iOS tiene vivo
-  il processo in background con 480-620 MB, e come ripiegare se lo chiude.
+  il processo in background e come ripiegare se lo chiude. Primi dati in
+  [background](docs/benchmarks/2026-11-06-background.md): solo con il microfono acceso l'app resta viva e riparte.
 - `[MANUALE]` Configurare Action Button e controllo; prova d'uso reale in più app.
 - `[MANUALE]` Sessione di consumo a telefono scollegato, 30 minuti, con sessione calda attiva.
 

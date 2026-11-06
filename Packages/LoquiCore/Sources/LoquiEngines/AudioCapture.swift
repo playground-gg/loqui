@@ -1,20 +1,48 @@
 #if os(iOS)
 @preconcurrency import AVFoundation
 import Foundation
+import Synchronization
 
 /// Cattura il microfono e consegna blocchi a 16 kHz mono. L'audio non viene mai scritto su disco.
+///
+/// Il microfono può restare acceso tra una dettatura e l'altra: iOS non permette di riaccenderlo dal
+/// background, ma con il motore già attivo basta aprire il flusso. Finché il flusso è chiuso i campioni
+/// vengono scartati senza convertirli né conservarli.
 @MainActor
 public final class AudioCapture {
     private let engine = AVAudioEngine()
-    private var continuation: AsyncStream<[Float]>.Continuation?
+    private let gate = StreamGate()
 
     public init() {}
+
+    /// Il microfono è acceso, quindi la prossima dettatura può partire anche dal background.
+    public var isHot: Bool { engine.isRunning }
 
     public static func requestPermission() async -> Bool {
         await AVAudioApplication.requestRecordPermission()
     }
 
     public func start() throws -> AsyncStream<[Float]> {
+        if !engine.isRunning { try startEngine() }
+        let (stream, continuation) = AsyncStream.makeStream(of: [Float].self, bufferingPolicy: .unbounded)
+        gate.open(continuation)
+        return stream
+    }
+
+    /// Chiude la dettatura in corso e lascia il microfono acceso.
+    public func stopCollecting() {
+        gate.close()
+    }
+
+    /// Spegne il microfono e libera la sessione audio: da qui iOS può sospendere l'app.
+    public func release() {
+        gate.close()
+        engine.inputNode.removeTap(onBus: 0)
+        engine.stop()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    private func startEngine() throws {
         let session = AVAudioSession.sharedInstance()
         // `.measurement` disattiva la regolazione del guadagno: su iPhone il livello risultava circa 10 volte più basso.
         try session.setCategory(.record, mode: .default)
@@ -32,30 +60,22 @@ public final class AudioCapture {
             throw EngineError.unavailable("Formato del microfono non supportato.")
         }
 
-        let (stream, continuation) = AsyncStream.makeStream(of: [Float].self, bufferingPolicy: .unbounded)
-        self.continuation = continuation
-        let tap = Self.makeTap(converter: converter, target: target, continuation: continuation)
+        // iOS può fermare il motore da solo, per esempio con una telefonata: il vecchio tap va tolto.
+        input.removeTap(onBus: 0)
+        let tap = Self.makeTap(converter: converter, target: target, gate: gate)
         input.installTap(onBus: 0, bufferSize: 1024, format: inputFormat, block: tap)
         engine.prepare()
         try engine.start()
-        return stream
-    }
-
-    public func stop() {
-        engine.inputNode.removeTap(onBus: 0)
-        engine.stop()
-        continuation?.finish()
-        continuation = nil
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     /// `nonisolated`: il blocco gira sul thread audio, non sul main actor.
     private nonisolated static func makeTap(
         converter: AVAudioConverter,
         target: AVAudioFormat,
-        continuation: AsyncStream<[Float]>.Continuation
+        gate: StreamGate
     ) -> AVAudioNodeTapBlock {
         return { buffer, _ in
+            guard gate.isOpen else { return }
             let ratio = target.sampleRate / buffer.format.sampleRate
             let capacity = AVAudioFrameCount(Double(buffer.frameLength) * ratio) + 32
             guard let output = AVAudioPCMBuffer(pcmFormat: target, frameCapacity: capacity) else { return }
@@ -72,8 +92,33 @@ public final class AudioCapture {
                 return source
             }
             guard error == nil, let channel = output.floatChannelData?[0], output.frameLength > 0 else { return }
-            continuation.yield(Array(UnsafeBufferPointer(start: channel, count: Int(output.frameLength))))
+            gate.yield(Array(UnsafeBufferPointer(start: channel, count: Int(output.frameLength))))
         }
+    }
+}
+
+/// Passaggio tra il thread audio e la dettatura in corso.
+private final class StreamGate: Sendable {
+    private let continuation = Mutex<AsyncStream<[Float]>.Continuation?>(nil)
+
+    var isOpen: Bool { continuation.withLock { $0 != nil } }
+
+    func open(_ new: AsyncStream<[Float]>.Continuation) {
+        continuation.withLock { current in
+            current?.finish()
+            current = new
+        }
+    }
+
+    func close() {
+        continuation.withLock { current in
+            current?.finish()
+            current = nil
+        }
+    }
+
+    func yield(_ samples: [Float]) {
+        continuation.withLock { _ = $0?.yield(samples) }
     }
 }
 #endif

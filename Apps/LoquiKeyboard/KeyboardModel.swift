@@ -10,7 +10,6 @@ final class KeyboardModel {
     private(set) var level: Float = 0
     private(set) var message: String?
     private(set) var preview: String?
-    private(set) var buffer = DictationBuffer()
     private(set) var isWaitingForApp = false
     var showsGlobe = true
 
@@ -18,6 +17,10 @@ final class KeyboardModel {
     private let store = SharedStore()
     private var lastDeliveredID: UUID?
     private var waitTask: Task<Void, Never>?
+    private var lastFinishedAt: Date?
+
+    /// Evita di ripartire subito se la tastiera ricompare appena dopo una dettatura.
+    private static let autoStartCooldown: TimeInterval = 2
 
     init(controller: UIInputViewController) {
         self.controller = controller
@@ -37,6 +40,14 @@ final class KeyboardModel {
         syncState()
     }
 
+    /// Scegliere Loqui dal globo vuol dire voler dettare: la dettatura parte senza toccare nulla.
+    func autoStartIfNeeded() {
+        guard phase == .idle, canDictate else { return }
+        if let lastFinishedAt, Date().timeIntervalSince(lastFinishedAt) < Self.autoStartCooldown { return }
+        message = nil
+        requestStart()
+    }
+
     func tapMic() {
         message = nil
         guard canDictate else {
@@ -50,14 +61,15 @@ final class KeyboardModel {
         }
     }
 
-    func undo() {
-        guard let count = buffer.popLast() else { return }
-        for _ in 0..<count { controller?.textDocumentProxy.deleteBackward() }
-        preview = nil
+    /// Scarta la dettatura e torna alla tastiera di prima: serve anche se è partita senza volerlo.
+    func cancelDictation() {
+        waitTask?.cancel()
+        isWaitingForApp = false
+        DarwinNotifier.post(.cancel)
+        lastFinishedAt = Date()
+        controller?.advanceToNextInputMode()
     }
 
-    func insertSpace() { controller?.textDocumentProxy.insertText(" ") }
-    func insertReturn() { controller?.textDocumentProxy.insertText("\n") }
     func deleteBackward() { controller?.textDocumentProxy.deleteBackward() }
     func nextKeyboard() { controller?.advanceToNextInputMode() }
 
@@ -105,7 +117,9 @@ final class KeyboardModel {
 
     private func syncState() {
         guard let state = store.read() else { return }
+        let previous = phase
         phase = state.isAlive() ? state.phase : .idle
+        if previous != .idle, phase == .idle { lastFinishedAt = Date() }
         level = phase == .listening ? state.level : 0
         if phase != .idle {
             isWaitingForApp = false
@@ -123,9 +137,11 @@ final class KeyboardModel {
         lastDeliveredID = id
         let inserted = DictationBuffer.textToInsert(text, after: proxy.documentContextBeforeInput)
         proxy.insertText(inserted)
-        buffer.record(inserted)
         preview = text
+        lastFinishedAt = Date()
         DarwinNotifier.post(.delivered)
+        // La tastiera di Loqui serve solo a dettare: finito, si torna subito a quella abituale.
+        controller?.advanceToNextInputMode()
     }
 
     /// Misura per l'obiettivo sotto i 40 MB, leggibile dal Mac nel contenitore condiviso.

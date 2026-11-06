@@ -16,15 +16,16 @@ struct KeyboardView: View {
                 if model.showsGlobe {
                     key(systemImage: "globe", label: "Tastiera successiva", action: model.nextKeyboard)
                 }
-                key(systemImage: "arrow.uturn.backward", label: "Annulla dettatura", action: model.undo)
-                    .disabled(!model.buffer.canUndo)
-                Button(action: model.insertSpace) {
-                    Text("spazio")
-                        .frame(maxWidth: .infinity, minHeight: 42)
+                if model.phase != .idle || model.isWaitingForApp {
+                    Button(role: .destructive, action: model.cancelDictation) {
+                        Text("Annulla")
+                            .frame(maxWidth: .infinity, minHeight: 42)
+                    }
+                    .buttonStyle(.bordered)
+                } else {
+                    Spacer()
                 }
-                .buttonStyle(.bordered)
                 key(systemImage: "delete.left", label: "Cancella", action: model.deleteBackward)
-                key(systemImage: "return", label: "Invio", action: model.insertReturn)
             }
             .padding(.horizontal, 8)
         }

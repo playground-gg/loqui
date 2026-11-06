@@ -30,6 +30,11 @@ final class KeyboardViewController: UIInputViewController {
         model.didAppear()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        model.autoStartIfNeeded()
+    }
+
     override func textWillChange(_ textInput: (any UITextInput)?) {
         super.textWillChange(textInput)
         model.showsGlobe = needsInputModeSwitchKey

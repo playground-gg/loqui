@@ -21,7 +21,23 @@ final class DictationModel {
     private(set) var footprintMB = 0.0
     /// La dettatura è partita dalla tastiera: il testo va consegnato lì, non mostrato qui.
     private(set) var isFromKeyboard = false
+    /// Il microfono è acceso in attesa della prossima dettatura.
+    private(set) var isMicReady = false
 
+    /// Per quanto il microfono resta acceso dopo una dettatura. Zero: si spegne subito.
+    var readyWindowSeconds: Int = UserDefaults.standard.object(forKey: "readyWindowSeconds") as? Int ?? 180 {
+        didSet {
+            UserDefaults.standard.set(readyWindowSeconds, forKey: "readyWindowSeconds")
+            if phase == .idle, isMicReady { scheduleMicRelease() }
+        }
+    }
+
+    private var releaseTask: Task<Void, Never>?
+    private var safetyStopTask: Task<Void, Never>?
+    private var isDiscarding = false
+
+    /// La dettatura può partire da sola scegliendo la tastiera: se nessuno la ferma, si ferma qui.
+    private static let maximumDictation = Duration.seconds(600)
     private let capture = AudioCapture()
     private let sharedStore = SharedStore()
     private var sharedState = SharedState()
@@ -37,6 +53,9 @@ final class DictationModel {
         DarwinNotifier.shared.observe(.stop) { [weak self] in
             Task { @MainActor in self?.stopFromKeyboard() }
         }
+        DarwinNotifier.shared.observe(.cancel) { [weak self] in
+            Task { @MainActor in self?.cancelFromKeyboard() }
+        }
         DarwinNotifier.shared.observe(.delivered) { [weak self] in
             Task { @MainActor in self?.clearSharedText() }
         }
@@ -49,6 +68,12 @@ final class DictationModel {
     }
 
     private func stopFromKeyboard() {
+        guard phase == .listening else { return }
+        stopRecording()
+    }
+
+    private func cancelFromKeyboard() {
+        isDiscarding = true
         guard phase == .listening else { return }
         stopRecording()
     }
@@ -69,13 +94,43 @@ final class DictationModel {
     }
 
     private func stopRecording() {
+        safetyStopTask?.cancel()
         phase = .transcribing
         publish(.transcribing)
-        capture.stop()
+        capture.stopCollecting()
+    }
+
+    func turnOffMic() {
+        guard phase == .idle else { return }
+        releaseMic()
+    }
+
+    private func scheduleMicRelease() {
+        releaseTask?.cancel()
+        let seconds = readyWindowSeconds
+        guard seconds > 0 else {
+            releaseMic()
+            return
+        }
+        isMicReady = true
+        releaseTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(seconds))
+            guard !Task.isCancelled else { return }
+            self?.releaseMic()
+        }
+    }
+
+    private func releaseMic() {
+        releaseTask?.cancel()
+        releaseTask = nil
+        capture.release()
+        isMicReady = false
     }
 
     private func start(store: ModelStore) async {
         errorMessage = nil
+        isDiscarding = false
+        releaseTask?.cancel()
         phase = .preparing("Permesso microfono…")
         guard await AudioCapture.requestPermission() else {
             finish(error: "Permesso negato. Attiva il microfono per Loqui in Impostazioni → Privacy e sicurezza.")
@@ -88,11 +143,23 @@ final class DictationModel {
             let session = DictationSession { try await store.preparedEngine() }
             // Il microfono parte subito: chi parla mentre il modello si carica non perde nulla.
             let audio = try capture.start()
+            // Annullata mentre il microfono partiva: non si registra nulla.
+            if isDiscarding { capture.stopCollecting() }
             phase = .listening
             publish(.listening)
+            safetyStopTask = Task { [weak self] in
+                try? await Task.sleep(for: Self.maximumDictation)
+                guard !Task.isCancelled, self?.phase == .listening else { return }
+                self?.stopRecording()
+            }
             footprintMB = physicalFootprintMB()
             let result = try await session.run(audio: audio) { [weak self] level in
                 Task { @MainActor in self?.publishLevel(level) }
+            }
+            if isDiscarding {
+                finish(error: nil)
+                scheduleMicRelease()
+                return
             }
             switch result {
             case .text(let segment):
@@ -106,9 +173,11 @@ final class DictationModel {
                 finish(error: Self.noTextMessage(seconds: seconds, peak: peak))
             }
         } catch {
-            capture.stop()
+            releaseMic()
             finish(error: error.localizedDescription)
+            return
         }
+        scheduleMicRelease()
     }
 
     private func finish(error: String?) {
@@ -166,7 +235,7 @@ final class DictationModel {
 
 struct DictationView: View {
     @Bindable var store: ModelStore
-    let model: DictationModel
+    @Bindable var model: DictationModel
 
     var body: some View {
         NavigationStack {
@@ -183,9 +252,16 @@ struct DictationView: View {
                             ForEach(store.usableModels) { Text($0.name).tag($0.id) }
                         }
                     }
+                    Picker("Microfono pronto", selection: $model.readyWindowSeconds) {
+                        Text("Si spegne subito").tag(0)
+                        Text("1 minuto").tag(60)
+                        Text("3 minuti").tag(180)
+                        Text("5 minuti").tag(300)
+                        Text("10 minuti").tag(600)
+                    }
                 }
                 .disabled(model.phase != .idle)
-                .frame(height: store.myLanguages.count > 1 ? 140 : 90)
+                .frame(height: store.myLanguages.count > 1 ? 190 : 140)
                 .scrollDisabled(true)
 
                 ScrollView {
@@ -213,6 +289,11 @@ struct DictationView: View {
                 Text(statusText)
                     .font(.footnote.monospacedDigit())
                     .foregroundStyle(.secondary)
+
+                if model.isMicReady, model.phase == .idle {
+                    Button("Spegni microfono", role: .destructive, action: model.turnOffMic)
+                        .font(.footnote)
+                }
 
                 Button {
                     model.toggle(store: store)
@@ -247,6 +328,7 @@ struct DictationView: View {
 
     private var statusText: String {
         switch model.phase {
+        case .idle where model.isMicReady: "Microfono acceso, pronto per la prossima dettatura"
         case .idle: store.activeModel?.detectsLanguageAutomatically == true ? "Pronto · lingua riconosciuta in automatico" : "Pronto"
         case .preparing(let message): message
         case .listening where model.isFromKeyboard: "In ascolto: torna all'app dove stavi scrivendo"

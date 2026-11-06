@@ -58,6 +58,12 @@ struct LoquiApp: App {
         if arguments.contains("--auto-language-check") {
             await LanguageCheck.run(catalog: store.catalog)
         }
+        if let scenario = value(of: "--auto-bg-check") {
+            await BackgroundCheck.run(scenario: scenario, store: store)
+        }
+        if arguments.contains("--auto-battery-check") {
+            await BatteryCheck.run(store: store)
+        }
         if arguments.contains("--auto-mixed-check") {
             await LanguageCheck.runMixed(catalog: store.catalog)
         }

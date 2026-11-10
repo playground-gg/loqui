@@ -4,7 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.giovannigiofre.loqui.download.*</string>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).download.*</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
@@ -26,7 +26,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.giovannigiofre.loqui</string>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>loqui</string>
@@ -35,6 +35,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>LoquiAppGroup</key>
+	<string>group.$(LOQUI_ID_PREFIX).loqui</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Loqui usa il microfono per trascrivere la tua voce direttamente sul telefono. L'audio non lascia mai il dispositivo.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

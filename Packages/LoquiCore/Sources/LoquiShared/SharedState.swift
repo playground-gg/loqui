@@ -1,10 +1,14 @@
 import Foundation
 
 public enum LoquiIPC {
-    public static let appGroup = "group.com.giovannigiofre.loqui"
+    /// Arriva da Info.plist (`LoquiAppGroup`), che lo deriva da `Config/Identifiers.xcconfig`:
+    /// così chi compila con un altro prefisso non deve toccare il codice.
+    public static let appGroup = Bundle.main.object(forInfoDictionaryKey: "LoquiAppGroup") as? String
+        ?? "group.com.giovannigiofre.loqui"
     public static let dictateURL = URL(string: "loqui://dictate")!
 
     /// Notifiche Darwin: non portano dati, avvisano solo che qualcosa è cambiato.
+    /// I nomi sono fissi: non sono legati al bundle ID né al team, quindi valgono per ogni build.
     public enum Signal: String, CaseIterable, Sendable {
         case start = "com.giovannigiofre.loqui.ipc.start"
         case stop = "com.giovannigiofre.loqui.ipc.stop"

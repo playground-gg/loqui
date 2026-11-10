@@ -30,6 +30,8 @@ iOS 26+, Swift 6, SwiftUI. Piano, milestone e stato: `PLAN.md`.
 ## Build e installazione sull'iPhone
 
 Team ID e UDID stanno in `.env.local`, escluso da git. Se `TEAM_ID` è vuoto, chiederlo all'utente.
+Il prefisso degli identificativi sta in `Config/Identifiers.xcconfig`. `scripts/install.sh` esegue gli
+stessi passi qui sotto in un comando solo, per chi installa o rinnova senza conoscere il progetto.
 
 ```sh
 set -a; source .env.local; set +a

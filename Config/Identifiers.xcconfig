@@ -1,0 +1,12 @@
+// Unico punto in cui si scelgono gli identificativi di Loqui.
+// Da qui derivano i bundle ID di app e tastiera e l'App Group (vedi project.yml).
+//
+// Non modificare questo file per usare i tuoi: crea Config/Local.xcconfig (escluso da git)
+// con il tuo prefisso e, se vuoi, il tuo team. `scripts/install.sh` lo crea da solo.
+//
+//   LOQUI_ID_PREFIX = com.tuonome
+//   DEVELOPMENT_TEAM = ABCDE12345
+
+LOQUI_ID_PREFIX = com.giovannigiofre
+
+#include? "Local.xcconfig"

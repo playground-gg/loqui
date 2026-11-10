@@ -38,26 +38,22 @@ Accuracy figures come from [Handy's evaluations](https://models.handy.computer/l
 
 **Steps:**
 
-1. Clone the repo:
+1. Sign in with your Apple ID in *Xcode → Settings → Accounts*. If you've never signed an app on this Mac, select your team there, click *Manage Certificates…* and add an *Apple Development* certificate.
+2. On the iPhone, turn on *Settings → Privacy & Security → Developer Mode* (it appears after the phone has been connected to Xcode once) and restart when asked.
+3. Connect the iPhone with a cable, unlock it, and run:
    ```bash
    git clone https://github.com/playground-gg/loqui.git
    cd loqui
+   scripts/install.sh
    ```
-2. Replace the identifiers with your own. The bundle IDs and the App Group start with `com.giovannigiofre`, which is registered to the author's Apple team, so Xcode refuses to sign them for anyone else. Pick your own prefix (for example `com.yourname`) and replace it everywhere in one go:
-   ```bash
-   grep -rl 'com\.giovannigiofre' project.yml Apps Packages \
-     | xargs sed -i '' 's/com\.giovannigiofre/com.yourname/g'
-   ```
-   Choose the prefix once and keep it: a free Apple ID can register only 10 new identifiers every 7 days, and Loqui uses two (app and keyboard).
-3. Generate the project and open it:
-   ```bash
-   xcodegen generate
-   open Loqui.xcodeproj
-   ```
-4. Sign in with your Apple ID in *Xcode → Settings → Accounts*, then select your team under *Signing & Capabilities* for both the **Loqui** and **LoquiKeyboard** targets. With a free Apple ID the team is called "Your Name (Personal Team)".
-5. On the iPhone, turn on *Settings → Privacy & Security → Developer Mode* (it appears after the phone has been connected to Xcode once) and restart when asked.
-6. Plug in the iPhone, pick it as the destination and press Run.
-7. The first time, the app won't open until you trust your developer certificate on the iPhone: *Settings → General → VPN & Device Management*.
+   The script asks for an identifier prefix (for example `com.yourname`), finds your team and your iPhone, builds the app, runs the keyboard privacy check and installs it. The first build takes several minutes.
+4. The first time, the app won't open until you trust your developer certificate on the iPhone: *Settings → General → VPN & Device Management*.
+
+Your choices are saved in `.env.local` and `Config/Local.xcconfig`, both ignored by git, so the next run asks nothing.
+
+**About the prefix.** App and keyboard identifiers are built from one prefix, set in [`Config/Identifiers.xcconfig`](Config/Identifiers.xcconfig). The default belongs to the author's Apple team and Xcode won't sign it for anyone else, which is why you pick your own. Choose it once and keep it: a free Apple ID can register only 10 new identifiers every 7 days, and Loqui uses two.
+
+**Prefer Xcode?** Create `Config/Local.xcconfig` containing `LOQUI_ID_PREFIX = com.yourname`, run `xcodegen generate`, open `Loqui.xcodeproj`, select your team under *Signing & Capabilities* for both the **Loqui** and **LoquiKeyboard** targets, and press Run.
 
 ### Free Apple ID: the weekly renewal
 
@@ -70,10 +66,10 @@ Apps signed with a free Apple ID stop working **7 days** after Xcode signed them
 
 **How to renew (about a minute)**
 
-1. Connect the iPhone to the Mac.
-2. Open `Loqui.xcodeproj` and press Run.
+1. Connect the iPhone to the Mac and unlock it.
+2. Run `scripts/install.sh` again (or press Run in Xcode).
 
-That's all: Xcode signs the app again and installs it over the old one, and you get another 7 days. Don't delete the app first, or you'll have to download the models again. You shouldn't need to add the keyboard or trust the certificate again, though that hasn't been checked across many renewals.
+That's all: the app is signed again and installed over the old one, and you get another 7 days. Don't delete the app first, or you'll have to download the models again. You shouldn't need to add the keyboard or trust the certificate again, though that hasn't been checked across many renewals.
 
 **Good to know**
 

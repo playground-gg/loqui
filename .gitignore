@@ -8,3 +8,4 @@ Loqui.xcodeproj/
 Packages/*/.build/
 *.mlmodelc/
 *.wav
+Config/Local.xcconfig

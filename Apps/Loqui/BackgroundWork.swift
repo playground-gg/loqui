@@ -6,7 +6,8 @@ import Foundation
 @MainActor
 final class BackgroundWork {
     static let shared = BackgroundWork()
-    private static let prefix = "com.giovannigiofre.loqui.download"
+    /// iOS accetta solo identificativi che iniziano con il bundle ID dell'app.
+    private static let prefix = "\(Bundle.main.bundleIdentifier ?? "com.giovannigiofre.loqui").download"
 
     private var registered: Set<String> = []
     private var task: BGContinuedProcessingTask?

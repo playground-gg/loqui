@@ -148,8 +148,10 @@ scripts/verify-keyboard-privacy.sh
 documentati nel README, così chiunque può ripeterli. Anche l'app avrà un test: dopo il download i motori
 girano in modalità offline.
 
-**Identificativi:** `com.giovannigiofre.loqui`, gruppo `group.com.giovannigiofre.loqui`, impostabili in
-un solo punto per chi fa un fork.
+**Identificativi:** `com.giovannigiofre.loqui`, gruppo `group.com.giovannigiofre.loqui`. Il prefisso sta in un
+solo punto, `Config/Identifiers.xcconfig`; chi compila con un altro team lo sostituisce in
+`Config/Local.xcconfig` (escluso da git), che `scripts/install.sh` crea da solo. Il codice legge l'App Group
+da Info.plist. Non ancora verificato sul dispositivo.
 
 **Licenze (M5):** app MIT, FluidAudio Apache 2.0, WhisperKit MIT, file NOTICE. I modelli si scaricano e
 non sono nel repo. Licenza di ciascun modello da riportare nel catalogo (Parakeet: CC-BY-4.0 [M]).

@@ -1,9 +1,12 @@
 name: Loqui
 options:
-  bundleIdPrefix: com.giovannigiofre
   deploymentTarget:
     iOS: "26.0"
   createIntermediateGroups: true
+# Gli identificativi stanno in Config/Identifiers.xcconfig (LOQUI_ID_PREFIX).
+configFiles:
+  Debug: Config/Identifiers.xcconfig
+  Release: Config/Identifiers.xcconfig
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -41,16 +44,17 @@ targets:
       path: Apps/Loqui/Loqui.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.giovannigiofre.loqui
+          - group.$(LOQUI_ID_PREFIX).loqui
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.giovannigiofre.loqui
+        PRODUCT_BUNDLE_IDENTIFIER: $(LOQUI_ID_PREFIX).loqui
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
     info:
       path: Apps/Loqui/Info.plist
       properties:
         CFBundleDisplayName: Loqui
+        LoquiAppGroup: group.$(LOQUI_ID_PREFIX).loqui
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -60,11 +64,11 @@ targets:
         UIBackgroundModes:
           - audio
         CFBundleURLTypes:
-          - CFBundleURLName: com.giovannigiofre.loqui
+          - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
             CFBundleURLSchemes:
               - loqui
         BGTaskSchedulerPermittedIdentifiers:
-          - com.giovannigiofre.loqui.download.*
+          - $(PRODUCT_BUNDLE_IDENTIFIER).download.*
         NSMicrophoneUsageDescription: Loqui usa il microfono per trascrivere la tua voce direttamente sul telefono. L'audio non lascia mai il dispositivo.
         NSSpeechRecognitionUsageDescription: Loqui usa il riconoscimento vocale di Apple sul dispositivo se scegli quel motore.
   LoquiKeyboard:
@@ -79,16 +83,17 @@ targets:
       path: Apps/LoquiKeyboard/LoquiKeyboard.entitlements
       properties:
         com.apple.security.application-groups:
-          - group.com.giovannigiofre.loqui
+          - group.$(LOQUI_ID_PREFIX).loqui
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.giovannigiofre.loqui.keyboard
+        PRODUCT_BUNDLE_IDENTIFIER: $(LOQUI_ID_PREFIX).loqui.keyboard
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
     info:
       path: Apps/LoquiKeyboard/Info.plist
       properties:
         CFBundleDisplayName: Loqui
+        LoquiAppGroup: group.$(LOQUI_ID_PREFIX).loqui
         NSExtension:
           NSExtensionPointIdentifier: com.apple.keyboard-service
           NSExtensionPrincipalClass: KeyboardViewController

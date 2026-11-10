@@ -28,20 +28,70 @@ Accuracy figures come from [Handy's evaluations](https://models.handy.computer/l
 
 ## Install
 
-There's no App Store or TestFlight build. You build it yourself with Xcode.
+**There is nothing to download and install directly.** No App Store, no TestFlight, no `.ipa`. The only way to get Loqui on your iPhone is to build it from source with Xcode, signed with your own Apple ID. That's a consequence of the project having no paid Apple Developer account: see [Why there's no download link](#why-theres-no-download-link).
 
-**You need:** a Mac with Xcode 27 and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`), an iPhone on iOS 26 or later, and an Apple ID (a free one works).
+**You need:**
 
-1. Clone and generate the project:
+- a Mac with Xcode 27 and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`). Without a Mac you can't install Loqui;
+- an iPhone on iOS 26 or later, and a cable;
+- an Apple ID. A free one works, with the [weekly renewal](#free-apple-id-the-weekly-renewal) described below.
+
+**Steps:**
+
+1. Clone the repo:
    ```bash
    git clone https://github.com/playground-gg/loqui.git
    cd loqui
+   ```
+2. Replace the identifiers with your own. The bundle IDs and the App Group start with `com.giovannigiofre`, which is registered to the author's Apple team, so Xcode refuses to sign them for anyone else. Pick your own prefix (for example `com.yourname`) and replace it everywhere in one go:
+   ```bash
+   grep -rl 'com\.giovannigiofre' project.yml Apps Packages \
+     | xargs sed -i '' 's/com\.giovannigiofre/com.yourname/g'
+   ```
+   Choose the prefix once and keep it: a free Apple ID can register only 10 new identifiers every 7 days, and Loqui uses two (app and keyboard).
+3. Generate the project and open it:
+   ```bash
    xcodegen generate
    open Loqui.xcodeproj
    ```
-2. In Xcode, select your team under *Signing & Capabilities* for both the **Loqui** and **LoquiKeyboard** targets. If you fork it, change the bundle IDs and App Group once in `project.yml`.
-3. Plug in the iPhone, pick it as the destination and press Run.
-4. On the iPhone, trust your developer certificate: *Settings → General → VPN & Device Management*.
+4. Sign in with your Apple ID in *Xcode → Settings → Accounts*, then select your team under *Signing & Capabilities* for both the **Loqui** and **LoquiKeyboard** targets. With a free Apple ID the team is called "Your Name (Personal Team)".
+5. On the iPhone, turn on *Settings → Privacy & Security → Developer Mode* (it appears after the phone has been connected to Xcode once) and restart when asked.
+6. Plug in the iPhone, pick it as the destination and press Run.
+7. The first time, the app won't open until you trust your developer certificate on the iPhone: *Settings → General → VPN & Device Management*.
+
+### Free Apple ID: the weekly renewal
+
+Apps signed with a free Apple ID stop working **7 days** after Xcode signed them. This is Apple's rule for free accounts, not something Loqui can change.
+
+**What happens when it expires**
+
+- Loqui no longer opens (iOS says the app is no longer available) and the keyboard stops working.
+- Nothing is deleted. Downloaded models and settings stay on the phone as long as you don't delete the app.
+
+**How to renew (about a minute)**
+
+1. Connect the iPhone to the Mac.
+2. Open `Loqui.xcodeproj` and press Run.
+
+That's all: Xcode signs the app again and installs it over the old one, and you get another 7 days. Don't delete the app first, or you'll have to download the models again. You shouldn't need to add the keyboard or trust the certificate again, though that hasn't been checked across many renewals.
+
+**Good to know**
+
+- The 7 days count from when Xcode created the signing profile, not from the last time you opened the app. There's no warning before it expires: a weekly reminder helps.
+- You need the Mac every week. There's no way to renew from the iPhone alone.
+- A free Apple ID can keep at most 3 self-built apps on a device at the same time.
+- With a paid Apple Developer membership (99 USD a year) the same build lasts **one year** instead of 7 days. Nothing else changes in the steps above.
+- Tools like AltStore or SideStore, which re-sign apps automatically, need an `.ipa` file. This repo doesn't publish one and that route is untested.
+
+### Why there's no download link
+
+Sharing an iOS app outside your own devices needs a paid Apple Developer account, and this project doesn't have one:
+
+- **App Store and TestFlight** are only available to paid accounts.
+- **A prebuilt `.ipa` wouldn't help.** An app signed with a free Apple ID runs only on the devices of the person who signed it.
+- Even with a paid account, the App Store isn't a given: Apple's rules for keyboards make parts of Loqui's flow uncertain to get approved (see Limits). TestFlight would be the realistic first step, and its builds expire after 90 days.
+
+So for now: the code is public, and everyone signs their own copy.
 
 ## Use
 
@@ -53,8 +103,9 @@ The microphone has to stay on in the Loqui app for the keyboard to start dictati
 
 ## Limits
 
-- **Free Apple ID:** the app expires after 7 days and has to be reinstalled from Xcode.
-- **Not on the App Store.** Apple's rules for keyboards make parts of this flow uncertain to get approved.
+- **Build it yourself, on a Mac.** No App Store, no TestFlight, no download: see [Install](#install).
+- **Free Apple ID:** the app expires every 7 days and has to be reinstalled from Xcode. See [the weekly renewal](#free-apple-id-the-weekly-renewal).
+- **App Store approval is uncertain.** Apple's rules for keyboards don't clearly allow parts of this flow.
 - **Orange mic indicator** while Loqui is ready, by design. Battery cost of staying ready isn't measured yet.
 - **No automatic return to the app you were in** if dictation has to open Loqui first. iOS has no public API for it, so you switch back yourself.
 - **No live text.** You see the text after you stop, not while you speak.
